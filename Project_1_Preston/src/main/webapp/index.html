@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="stylesheet" href="Index.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="container">
+            <h1>Welcome to the TRMS!</h1>
+        </div>
+
+        <form>
+            <div class="form-group row">
+                <label for="email" class="col-sm-2 col-form-label">Email</label>
+                <div class="col-sm-10">
+                    <input type="email" class="form-control" id="email" placeholder="email@example.com">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="password" class="col-sm-2 col-form-label">Password</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+                </div>
+            </div>
+            <button onclick="Login()" type="button" class="btn btn-primary" id="loginbtn">Sign in</button>
+        </form>
+
+        <p id="result"></p>
+
+    </div>
+</body>
+<script>
+
+    function Login() {
+
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+
+        console.log(email + password);
+
+        // create json object to send in request body
+        let emp = {
+            email: email,
+            password: password
+        };
+
+        // make an AJAX call to get the employee from db
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                let employee = JSON.parse(this.responseText);
+
+                let information = `<h3>Welcome ${employee.firstName}!</h3><br>
+                                <button class="btn btn-primary" onclick="window.location.href='http://localhost:8080/Project_1_Preston/MainPage.html'">Main Page</button>`
+
+
+                document.getElementById("result").innerHTML = information;
+
+            }
+            if (this.readyState == 3) {
+                console.log("3");
+            }
+            if (this.readyState == 2) {
+                console.log("2");
+            }
+            if (this.readyState == 1) {
+                console.log("1");
+            }
+        }
+
+
+        // use put request to send sensitive info so it isn't in the url
+        xhttp.open("POST", "http://localhost:8080/Project_1_Preston/login.do", true);
+
+        // set request header
+        xhttp.setRequestHeader("Content-Type", "application/json");
+
+        // send the emp object
+        xhttp.send(JSON.stringify(emp));
+
+    }
+
+</script>
+
+</html>

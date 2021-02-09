@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tuition Form Viewer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+
+    <h3>Actor Viewer By ID</h3>
+    <input id="form_id" type="number">
+
+    <button onclick="getTuitionFormById()" type="button">Get TuitionForm</button>
+
+    <p id="result"></p>
+
+</body>
+
+<script>
+
+    function getTuitionFormById() {
+        // document.getElementById("result").innerHTML = "Got the Actor";
+
+        let formId = document.getElementById("form_id").value;
+
+        // make an AJAX call
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                let form = JSON.parse(this.responseText);
+
+                let information = `<h3>Id: ${form.id}</h3><br>`
+
+                document.getElementById("result").innerHTML = information;
+
+            }
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project_1_Preston/getFormById.do?id=" + formId, true);
+
+        xhttp.send();
+    }
+
+</script>
+
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Create Tuition Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+</head>
+
+<body onload="loggedInUser()">
+    <div class="container">
+        <h1>Please Fill out the Tuition Reimbursement Form!</h1>
+    </div>
+    <div class="container">
+        <form>
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Please enter the date for the event</label>
+                <input type="date" class="form-control" id="date" placeholder="MM/DD/YYYY">
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Please enter the time for the event</label>
+                <input type="time" class="form-control" id="time" placeholder="6:00">
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Please enter the location for the event</label>
+                <input type="text" class="form-control" id="location" rows="3">
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Please enter a description for the event</label>
+                <input type="text" class="form-control" id="description" rows="3">
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Please enter the cost of the event</label>
+                <input type="number" class="form-control" id="cost">
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Event Type</label>
+                <select class="form-control" id="eventType">
+                    <option value="University Course">University Course</option>
+                    <option value="Seminar">Seminar</option>
+                    <option value="Certification Preparation Class">Certification Preparation Class</option>
+                    <option value="Certification">Certification</option>
+                    <option value="Technical Training">Technical Training</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Grade Format</label>
+                <select class="form-control" id="gradeFormat">
+                    <option value="Grade">Grade</option>
+                    <option value="Presentation">Presentation</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlInput1">What is your justification for attending the event?</label>
+                <input type="text" class="form-control" id="justification" rows="3">
+            </div>
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">Is your request urgent?</label>
+                <select class="form-control" id="isUrgent">
+                    <option value="1">The event is less than two weeks away</option>
+                    <option value="0">The event is two or more weeks away</option>
+                </select>
+            </div>
+            <button onclick="createForm()" type="button" class="btn btn-primary mb-2">Submit</button>
+        </form>
+        <div class="container" id="success"></div>
+    </div>
+
+</body>
+<script>
+
+    function createForm() {
+
+        //create a variable to hold the empId of the logged in user
+
+        let date = document.getElementById("date").value;
+        date = date.toString();
+        console.log(typeof (date));
+
+        let time = document.getElementById("time").value;
+        time = time.replace(":", "");
+        console.log(time + "time");
+        let location = document.getElementById("location").value;
+        let description = document.getElementById("description").value;
+        let cost = document.getElementById("cost").value;
+        let eventType = document.getElementById("eventType").value;
+        let gradeFormat = document.getElementById("gradeFormat").value;
+        let justification = document.getElementById("justification").value;
+        let isUrgent = document.getElementById("isUrgent").value;
+
+        //Lets make a JS Object with these variables and any values we will need.
+        //Doing so will make it easy to make a JSON out of these values.
+        let TuitionForm = {
+            //empId: //obect from employee 
+
+            empId: empId,
+            eventDate: date,
+            eventTime: time,
+            eventLocation: location,
+            description: description,
+            eventCost: cost,
+            gradeFormat: gradeFormat,
+            eventType: eventType,
+            eventJustification: justification,
+            isUrgent: isUrgent
+        }
+
+        console.log(TuitionForm);
+
+        console.log("loggedInUser empID" + empId);
+
+
+        //Make an AJAX Call
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+
+            if (this.readyState == 4 && this.status == 200) {
+
+                console.log(this.responseText);
+
+                eventInfo = JSON.parse(this.responseText);
+                console.log(eventInfo);
+
+                formId = eventInfo.formId;
+                eventType = eventInfo.eventType;
+                console.log(eventType);
+
+                createE();
+
+            }
+
+        }
+
+        xhttp.open("POST", "http://localhost:8080/Project_1_Preston/createForm.do", true);
+
+        //Set a Request HEader which will indicate to the Server that the Request Body will be JSON
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+
+        //Send, but now we will pass in the Request Body as a parameter of the function
+        xhttp.send(JSON.stringify(TuitionForm));
+
+    }
+
+    function createE() {
+
+        let eventType = document.getElementById("eventType").value;
+
+        let event = {
+            formId: formId,
+            eventType: eventType
+        }
+        console.log(event);
+
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                eventObj = JSON.parse(this.responseText);
+                console.log(eventObj);
+
+                eventId = eventObj.eventId;
+                console.log(eventId);
+
+                createApproval();
+            }
+        }
+        xhttp.open("POST", "http://localhost:8080/Project_1_Preston/createEvent.do", true);
+
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+
+        xhttp.send(JSON.stringify(event));
+    }
+
+    function createApproval() {
+
+        let approval = {
+            eventId: eventId,
+            supervisorApproval: 0,
+            departmentHeadApproval: 0,
+            benCoApproval: 0
+        }
+        console.log(approval);
+
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                approvalObj = JSON.parse(this.responseText);
+                console.log(approvalObj);
+
+                approvalId = approvalObj.approvalId;
+                console.log(approvalId);
+
+                updateAppIdTF();
+
+            }
+
+        }
+        xhttp.open("POST", "http://localhost:8080/Project_1_Preston/createApproval.do", true);
+
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+
+        xhttp.send(JSON.stringify(approval));
+    }
+
+
+    function updateAppIdTF() {
+
+        let date = document.getElementById("date").value;
+        date = date.toString();
+        console.log(typeof (date));
+
+        let time = document.getElementById("time").value;
+        time = time.replace(":", "");
+        console.log(time + "time");
+        let location = document.getElementById("location").value;
+        let description = document.getElementById("description").value;
+        let cost = document.getElementById("cost").value;
+        let eventType = document.getElementById("eventType").value;
+        let gradeFormat = document.getElementById("gradeFormat").value;
+        let justification = document.getElementById("justification").value;
+        let isUrgent = document.getElementById("isUrgent").value;
+
+        //Lets make a JS Object with these variables and any values we will need.
+        //Doing so will make it easy to make a JSON out of these values.
+
+
+        let approvalIdUpdate = {
+            formId: formId,
+            empId: empId,
+            eventDate: date,
+            eventTime: time,
+            eventLocation: location,
+            description: description,
+            eventCost: cost,
+            gradeFormat: gradeFormat,
+            eventType: eventType,
+            eventJustification: justification,
+            approvalStatus: approvalId,
+            isUrgent: isUrgent
+        }
+        console.log(approvalIdUpdate);
+
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+
+                let success = `<p>Your Tuition Form was submitted!</p>
+                <button onclick="window.location = 'http://localhost:8080/Project_1_Preston/MainPage.html'" class="btn btn-primary mb-2" type="button">Main Page</button>`
+
+                document.getElementById("success").innerHTML = success;
+            }
+        }
+        xhttp.open("POST", "http://localhost:8080/Project_1_Preston/updateApprovalIdTF.do", true);
+
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+
+        xhttp.send(JSON.stringify(approvalIdUpdate));
+    }
+
+
+    function loggedInUser() {
+
+        let xhttp = new XMLHttpRequest();
+
+        xhttp.onreadystatechange = function () {
+
+            if (this.readyState == 4 && this.status == 200) {
+
+                //console.log(this.responseText);
+
+                emp = JSON.parse(this.responseText);
+                console.log(emp);
+                empId = emp.empId;
+                console.log(empId);
+
+            }
+
+        }
+
+        xhttp.open("GET", "http://localhost:8080/Project_1_Preston/loggedInUser.do", true)
+
+        xhttp.send();
+
+    }
+</script>
+
+</html>
