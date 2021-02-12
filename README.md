@@ -27,15 +27,15 @@ To-Do Features
 * Add a bit more functionality with the tables that the employees see
 
 ## Getting Started
-git clone git@github.com:Prest261/Project1_Preston.git
-download the Apache Tomcat server to host the application.
-Set up a database through whichever is your hosting go-to, I used AWS with Oracle SQL
-make sure all the dependencies are in the pom.xml
+* git clone git@github.com:Prest261/Project1_Preston.git
+* Download the Apache Tomcat server to host the application.
+* Set up a database through whichever is your hosting go-to, I used AWS with Oracle SQL
+* make sure all the dependencies are in the pom.xml
 
 ## Usage
-Navigate to your localhost:8080/Project1_Preston and you should arrive at the login page
-Login as a user that exists in your database and you can create tuition forms, view your tuition forms, or update grades
-If your user is a Department Head or Benefits Coordinator then they have the ability to approve/deny other tuition forms
+* Navigate to your localhost:8080/Project1_Preston and you should arrive at the login page
+* Login as a user that exists in your database and you can create tuition forms, view your tuition forms, or update grades
+* If your user is a Department Head or Benefits Coordinator then they have the ability to approve/deny other tuition forms
 
 ## Contributors
 Sydney Preston
